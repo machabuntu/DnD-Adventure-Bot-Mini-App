@@ -226,9 +226,12 @@ section {
     border-radius: 4px;
     width: 100%;
     max-width: 600px; /* Increase max width */
-    max-height: 95vh; /* Increase height limit */
+    height: 90vh; /* Set specific height */
+    max-height: 90vh; /* Limit height */
     overflow-y: auto;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Modal header styles */
@@ -252,8 +255,9 @@ section {
 .character-details {
     padding: 10px 0;
     border-top: 1px solid #eee;
-    max-height: 70vh;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0; /* Allow flex child to shrink */
 }
 
 .character-basic-info,
