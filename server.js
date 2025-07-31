@@ -108,8 +108,6 @@ app.get('/api/adventures/:adventureId/party', async (req, res) => {
                 c.level,
                 c.experience,
                 c.user_id,
-                u.first_name,
-                u.username,
                 c.hit_points,
                 c.max_hit_points,
                 c.strength,
@@ -128,7 +126,6 @@ app.get('/api/adventures/:adventureId/party', async (req, res) => {
                 ap.joined_at
             FROM adventure_participants ap
             INNER JOIN characters c ON ap.character_id = c.id
-            LEFT JOIN users u ON c.user_id = u.id
             LEFT JOIN races r ON c.race_id = r.id
             LEFT JOIN origins o ON c.origin_id = o.id
             LEFT JOIN classes cl ON c.class_id = cl.id

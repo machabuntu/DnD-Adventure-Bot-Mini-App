@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startAutoRefresh(); // Start auto-refresh on party screen
 
         party.forEach(member => {
-            const playerName = member.username || member.first_name || `User ${member.user_id}`;
+            const playerName = `Player ${member.user_id}`;
             const partyMemberDiv = document.createElement('div');
             partyMemberDiv.className = 'party-member';
             partyMemberDiv.innerHTML = `
