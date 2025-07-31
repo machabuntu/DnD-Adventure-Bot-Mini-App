@@ -60,7 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     if (data.character) {
                         showCharacterModal(data.character);
-                        startAutoRefresh(); // Start auto-refresh on character screen
+                        // Only start auto-refresh if it's not already running
+                        if (!refreshInterval) {
+                            startAutoRefresh();
+                        }
                     } else {
                         alert('У вас нет активного персонажа');
                     }
@@ -138,7 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
         mainButtonsSection.style.display = 'none';
         partySection.style.display = 'block';
         partyList.innerHTML = '';
-        startAutoRefresh(); // Start auto-refresh on party screen
+        // Only start auto-refresh if it's not already running
+        if (!refreshInterval) {
+            startAutoRefresh();
+        }
 
         party.forEach(member => {
             const playerName = `Player ${member.user_id}`;
@@ -272,6 +278,159 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function hideCharacterModal() {
         characterModal.style.display = 'none';
+        stopAutoRefresh(); // Stop auto-refresh when closing modal
+    }
+    
+    // Fetch functions without auto-refresh restart (for auto-refresh calls)
+    function fetchMyCharacterNoRefresh() {
+        const userId = getUserId();
+        fetch(`${apiBaseUrl}/my-character?user_id=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.character) {
+                    showCharacterModalNoRefresh(data.character);
+                }
+            })
+            .catch(error => {
+                console.error('Error auto-refreshing character:', error);
+            });
+    }
+    
+    function fetchActivePartyNoRefresh() {
+        fetch(`${apiBaseUrl}/adventures`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.adventures.length > 0) {
+                    const activeAdventure = data.adventures[0];
+                    fetchPartyNoRefresh(activeAdventure.adventure_id);
+                }
+            })
+            .catch(error => {
+                console.error('Error auto-refreshing adventures:', error);
+            });
+    }
+    
+    function fetchPartyNoRefresh(adventureId) {
+        fetch(`${apiBaseUrl}/adventures/${adventureId}/party`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPartySectionNoRefresh(data.party);
+                }
+            })
+            .catch(error => {
+                console.error('Error auto-refreshing party:', error);
+            });
+    }
+    
+    function showCharacterModalNoRefresh(character) {
+        // Same as showCharacterModal but without affecting refresh interval
+        const getModifier = (stat) => Math.floor((stat - 10) / 2);
+        
+        const statEmojis = {
+            strength: '🐂',
+            dexterity: '🐱', 
+            constitution: '🐻',
+            intelligence: '🦊',
+            wisdom: '🦉',
+            charisma: '🦅'
+        };
+        
+        const statNames = {
+            strength: 'Сила',
+            dexterity: 'Ловкость',
+            constitution: 'Телосложение',
+            intelligence: 'Интеллект', 
+            wisdom: 'Мудрость',
+            charisma: 'Харизма'
+        };
+        
+        let statsHtml = '<div class="character-stats"><h3>📊 Характеристики:</h3>';
+        for (const [statKey, statName] of Object.entries(statNames)) {
+            const value = character[statKey] || 10;
+            const modifier = getModifier(value);
+            const emoji = statEmojis[statKey];
+            statsHtml += `<p>${emoji} <b>${statName}:</b> ${value} (${modifier >= 0 ? '+' : ''}${modifier})</p>`;
+        }
+        statsHtml += '</div>';
+        
+        let equipmentHtml = '<div class="character-equipment"><h3>🎒 Экипировка:</h3>';
+        if (character.equipment && character.equipment.length > 0) {
+            character.equipment.forEach(item => {
+                if (item.item_type === 'armor') {
+                    equipmentHtml += `<p>🛡️ <b>Доспехи:</b> ${item.item_name}</p>`;
+                } else if (item.item_type === 'weapon') {
+                    const damageText = item.damage && item.damage_type ? ` (${item.damage} ${item.damage_type})` : '';
+                    equipmentHtml += `<p>⚔️ <b>Оружие:</b> ${item.item_name}${damageText}</p>`;
+                }
+            });
+        } else {
+            equipmentHtml += '<p>Нет экипировки</p>';
+        }
+        equipmentHtml += '</div>';
+        
+        let spellsHtml = '';
+        if (character.is_spellcaster && character.spells && character.spells.length > 0) {
+            spellsHtml = '<div class="character-spells"><h3>📜 Заклинания:</h3>';
+            const spellsByLevel = {};
+            character.spells.forEach(spell => {
+                const level = spell.level;
+                if (!spellsByLevel[level]) spellsByLevel[level] = [];
+                spellsByLevel[level].push(spell.name);
+            });
+            
+            Object.keys(spellsByLevel).sort((a, b) => a - b).forEach(level => {
+                const levelName = level == 0 ? 'Заговоры' : `${level} уровень`;
+                spellsHtml += `<p><b>${levelName}:</b> ${spellsByLevel[level].join(', ')}</p>`;
+            });
+            spellsHtml += '</div>';
+        }
+        
+        characterDetails.innerHTML = `
+            <div class="character-basic-info">
+                <p>👤 <b>Имя:</b> ${character.name}</p>
+                <p>🧝‍♂️ <b>Раса:</b> ${character.race_name}</p>
+                <p>🎭 <b>Происхождение:</b> ${character.origin_name}</p>
+                <p>⚔️ <b>Класс:</b> ${character.class_name}</p>
+                <p>📊 <b>Уровень:</b> ${character.level}</p>
+                <p>⭐ <b>Опыт:</b> ${character.experience}</p>
+                <p>❤️ <b>Очки здоровья:</b> ${character.hit_points}/${character.max_hit_points}</p>
+                <p>💰 <b>Деньги:</b> ${character.money} монет</p>
+                <p>🎯 <b>Бонус мастерства:</b> +${character.proficiency_bonus}</p>
+            </div>
+            
+            <div class="character-skills">
+                <h3>🎯 Навыки:</h3>
+                <p>${character.skills && character.skills.length > 0 ? character.skills.join(', ') : 'Нет навыков'}</p>
+            </div>
+            
+            ${statsHtml}
+            ${equipmentHtml}
+            ${spellsHtml}
+        `;
+    }
+    
+    function showPartySectionNoRefresh(party) {
+        partyList.innerHTML = '';
+        
+        party.forEach(member => {
+            const playerName = `Player ${member.user_id}`;
+            const partyMemberDiv = document.createElement('div');
+            partyMemberDiv.className = 'party-member';
+            partyMemberDiv.innerHTML = `
+                <div class="member-info">
+                    <p>👤 <b>${member.name}</b> (Lv. ${member.level})</p>
+                    <p>⚔️ ${member.class_name}</p>
+                    <p class="player-name">🎮 ${playerName}</p>
+                </div>
+                <button class="view-character-button" data-id="${member.character_id}">Детали</button>
+            `;
+            partyList.appendChild(partyMemberDiv);
+            
+            partyMemberDiv.querySelector('.view-character-button').addEventListener('click', () => {
+                fetchCharacterDetails(member.character_id);
+            });
+        });
     }
 
     function showAdventuresList() {
@@ -281,16 +440,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auto-refresh every 3 seconds
     function startAutoRefresh() {
+        // Clear any existing interval first
+        stopAutoRefresh();
+        
         refreshInterval = setInterval(() => {
             // Only refresh when on character or party screens
             if (partySection.style.display === 'block') {
-                // Re-fetch the current party data
-                const userId = getUserId();
-                fetchActiveParty();
+                // Re-fetch the current party data without starting new refresh
+                console.log('Auto-refreshing party data');
+                fetchActivePartyNoRefresh();
             } else if (characterModal.style.display === 'block') {
-                // Re-fetch character data if it's the user's own character
-                const userId = getUserId();
-                fetchMyCharacter();
+                // Re-fetch character data without starting new refresh
+                console.log('Auto-refreshing character data');
+                fetchMyCharacterNoRefresh();
             }
         }, 3000);
     }
