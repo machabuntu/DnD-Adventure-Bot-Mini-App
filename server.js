@@ -6,6 +6,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Database configuration
@@ -107,6 +108,8 @@ app.get('/api/adventures/:adventureId/party', async (req, res) => {
                 c.level,
                 c.experience,
                 c.user_id,
+                u.first_name,
+                u.username,
                 c.hit_points,
                 c.max_hit_points,
                 c.strength,
@@ -125,6 +128,7 @@ app.get('/api/adventures/:adventureId/party', async (req, res) => {
                 ap.joined_at
             FROM adventure_participants ap
             INNER JOIN characters c ON ap.character_id = c.id
+            LEFT JOIN users u ON c.user_id = u.id
             LEFT JOIN races r ON c.race_id = r.id
             LEFT JOIN origins o ON c.origin_id = o.id
             LEFT JOIN classes cl ON c.class_id = cl.id
@@ -198,6 +202,130 @@ app.get('/api/adventures/:adventureId/party', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             error: 'Failed to fetch party members' 
+        });
+    }
+});
+
+// Get current user's character (for Telegram Mini App)
+app.get('/api/my-character', async (req, res) => {
+    try {
+        // Get user_id from Telegram Mini App init data or query parameter
+        const userId = req.query.user_id;
+        
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                error: 'User ID is required'
+            });
+        }
+        
+        // Get the user's most recent active character
+        const [characters] = await pool.execute(`
+            SELECT 
+                c.id as character_id,
+                c.name,
+                c.level,
+                c.experience,
+                c.user_id,
+                c.hit_points,
+                c.max_hit_points,
+                c.strength,
+                c.dexterity,
+                c.constitution,
+                c.intelligence,
+                c.wisdom,
+                c.charisma,
+                c.money,
+                r.name as race_name,
+                o.name as origin_name,
+                cl.name as class_name,
+                cl.hit_die,
+                cl.is_spellcaster,
+                l.proficiency_bonus,
+                c.created_at
+            FROM characters c
+            LEFT JOIN races r ON c.race_id = r.id
+            LEFT JOIN origins o ON c.origin_id = o.id
+            LEFT JOIN classes cl ON c.class_id = cl.id
+            LEFT JOIN levels l ON c.level = l.level
+            WHERE c.user_id = ? AND c.is_active = TRUE
+            ORDER BY c.created_at DESC
+            LIMIT 1
+        `, [userId]);
+        
+        if (characters.length === 0) {
+            return res.json({
+                success: true,
+                character: null,
+                message: 'No active character found for this user'
+            });
+        }
+        
+        const character = characters[0];
+        
+        // Get skills
+        const [skills] = await pool.execute(`
+            SELECT skill_name 
+            FROM character_skills 
+            WHERE character_id = ?
+        `, [character.character_id]);
+        
+        character.skills = skills.map(skill => skill.skill_name);
+        
+        // Get equipment
+        const [equipment] = await pool.execute(`
+            SELECT 
+                ce.item_type, 
+                ce.item_id, 
+                ce.is_equipped,
+                CASE 
+                    WHEN ce.item_type = 'armor' THEN a.name
+                    WHEN ce.item_type = 'weapon' THEN w.name
+                END as item_name,
+                CASE 
+                    WHEN ce.item_type = 'weapon' THEN w.damage
+                    ELSE NULL
+                END as damage,
+                CASE 
+                    WHEN ce.item_type = 'weapon' THEN w.damage_type
+                    ELSE NULL
+                END as damage_type,
+                CASE 
+                    WHEN ce.item_type = 'armor' THEN a.armor_class
+                    ELSE NULL
+                END as armor_class
+            FROM character_equipment ce
+            LEFT JOIN armor a ON ce.item_type = 'armor' AND ce.item_id = a.id
+            LEFT JOIN weapons w ON ce.item_type = 'weapon' AND ce.item_id = w.id
+            WHERE ce.character_id = ?
+        `, [character.character_id]);
+        
+        character.equipment = equipment;
+        
+        // Get spells if spellcaster
+        if (character.is_spellcaster) {
+            const [spells] = await pool.execute(`
+                SELECT s.name, s.level, s.damage, s.damage_type, s.description
+                FROM character_spells cs
+                JOIN spells s ON cs.spell_id = s.id
+                WHERE cs.character_id = ?
+                ORDER BY s.level, s.name
+            `, [character.character_id]);
+            
+            character.spells = spells;
+        } else {
+            character.spells = [];
+        }
+        
+        res.json({
+            success: true,
+            character: character
+        });
+    } catch (error) {
+        console.error('Error fetching current user character:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch character details' 
         });
     }
 });

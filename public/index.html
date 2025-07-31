@@ -37,16 +37,11 @@
         </div>
 
         <!-- Main Content -->
-        <main id="mainContent" style="display: none;">
-            <!-- Adventures List -->
-            <section id="adventuresSection" class="section">
-                <div class="section-header">
-                    <h2>🗡️ Активные Приключения</h2>
-                    <button id="refreshButton" class="refresh-button">🔄</button>
-                </div>
-                <div id="adventuresList" class="adventures-list">
-                    <!-- Adventures will be populated here -->
-                </div>
+<main id="mainContent" style="display: none;">
+            <!-- Main Buttons -->
+            <section id="mainButtonsSection" class="section">
+                <button id="myCharacterButton" class="main-button">Мой Персонаж</button>
+                <button id="activePartyButton" class="main-button">Активная Группа</button>
             </section>
 
             <!-- Party Section -->
@@ -74,9 +69,8 @@
             </div>
         </main>
 
-        <!-- Footer -->
+<!-- Footer -->
         <footer class="app-footer">
-            <p>Обновлено: <span id="lastUpdate">--:--</span></p>
             <p class="version">v1.0.0</p>
         </footer>
     </div>

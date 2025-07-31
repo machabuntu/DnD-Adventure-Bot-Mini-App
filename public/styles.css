@@ -315,28 +315,6 @@ p.version {
     background-color: #5a6268;
 }
 
-/* Party member styles */
-.party-member {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    background-color: #f8f9fa;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    transition: box-shadow 0.2s ease;
-}
-
-.party-member:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.party-member p {
-    margin: 0;
-    line-height: 1.4;
-}
-
 /* Character details enhanced styling */
 .character-details p {
     margin: 8px 0;
@@ -348,38 +326,38 @@ p.version {
     color: #333;
 }
 
-/* Adventure enhanced styling */
-.adventure {
-    background-color: #f8f9fa;
-    margin-bottom: 10px;
+/* Main buttons */
+.main-button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
     border-radius: 4px;
-    border-left: 4px solid #007BFF;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.adventure:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+.main-button:hover {
+    background-color: #0056b3;
 }
 
-/* Loading screen enhanced */
-.loading-screen p {
+.member-info {
+    flex-grow: 1;
+}
+
+.member-info p {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+.player-name {
     color: #666;
-    font-weight: 500;
-}
-
-/* Modal backdrop blur effect */
-.modal {
-    backdrop-filter: blur(3px);
-}
-
-/* Status connected/disconnected colors */
-.status-indicator.connected {
-    background-color: #28a745;
-}
-
-.status-indicator.disconnected {
-    background-color: #dc3545;
+    font-size: 14px;
 }
 
 /* Responsive design */
@@ -417,5 +395,9 @@ p.version {
         width: 95%;
         margin: 10px;
     }
+    
+    .main-button {
+        max-width: 100%;
+        margin: 10px 0;
+    }
 }
-

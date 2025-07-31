@@ -5,23 +5,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('mainContent');
     const errorScreen = document.getElementById('errorScreen');
     const errorMessage = document.getElementById('errorMessage');
-    const adventuresList = document.getElementById('adventuresList');
+    const myCharacterButton = document.getElementById('myCharacterButton');
+    const activePartyButton = document.getElementById('activePartyButton');
+    const mainButtonsSection = document.getElementById('mainButtonsSection');
     const partySection = document.getElementById('partySection');
     const partyList = document.getElementById('partyList');
     const characterModal = document.getElementById('characterModal');
     const characterDetails = document.getElementById('characterDetails');
 
     const retryButton = document.getElementById('retryButton');
-    retryButton.addEventListener('click', fetchAdventures);
-
-    const refreshButton = document.getElementById('refreshButton');
-    refreshButton.addEventListener('click', fetchAdventures);
+    retryButton.addEventListener('click', () => showMainButtons());
 
     const backToAdventuresButton = document.getElementById('backToAdventures');
-    backToAdventuresButton.addEventListener('click', showAdventuresList);
+    backToAdventuresButton.addEventListener('click', showMainButtons);
 
     const closeModalButton = document.getElementById('closeModal');
     closeModalButton.addEventListener('click', hideCharacterModal);
+
+    // Event listeners for main buttons
+    myCharacterButton.addEventListener('click', fetchMyCharacter);
+    activePartyButton.addEventListener('click', fetchActiveParty);
+
+    // Auto-refresh interval
+    let refreshInterval;
+    
+    // Get user ID from Telegram WebApp
+    function getUserId() {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user) {
+            return window.Telegram.WebApp.initDataUnsafe.user.id;
+        }
+        return '123456789'; // Fallback for testing
+    }
 
     function setLoadingScreen(loading) {
         loadingScreen.style.display = loading ? 'flex' : 'none';
@@ -35,18 +49,44 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.textContent = message;
     }
 
-    function fetchAdventures() {
+    function fetchMyCharacter() {
         setLoadingScreen(true);
         setErrorScreen(false);
-
-        fetch(`${apiBaseUrl}/adventures`)
+        
+        const userId = getUserId();
+        fetch(`${apiBaseUrl}/my-character?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    displayAdventures(data.adventures);
+                    if (data.character) {
+                        showCharacterModal(data.character);
+                        startAutoRefresh(); // Start auto-refresh on character screen
+                    } else {
+                        alert('У вас нет активного персонажа');
+                    }
                     setLoadingScreen(false);
                 } else {
-                    setErrorScreen(true, 'Failed to load adventures');
+                    setErrorScreen(true, 'Failed to load your character');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching character:', error);
+                setErrorScreen(true, 'Failed to load your character');
+            });
+    }
+
+    function fetchActiveParty() {
+        setLoadingScreen(true);
+        setErrorScreen(false);
+        
+        fetch(`${apiBaseUrl}/adventures`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.adventures.length > 0) {
+                    const activeAdventure = data.adventures[0]; // Get first active adventure
+                    fetchParty(activeAdventure.adventure_id);
+                } else {
+                    setErrorScreen(true, 'No active adventures found');
                 }
             })
             .catch(error => {
@@ -55,30 +95,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function displayAdventures(adventures) {
-        adventuresList.innerHTML = '';
-
-        if (adventures.length === 0) {
-            adventuresList.innerHTML = '<p>No active adventures.</p>';
-            return;
-        }
-
-        adventures.forEach(adventure => {
-            const adventureDiv = document.createElement('div');
-            adventureDiv.className = 'adventure';
-            adventureDiv.innerHTML = `
-                <div class="adventure-header">
-                    🗡️ ${adventure.adventure_id} - ${adventure.participant_count} участник(и)
-                </div>
-                <button class="view-party-button" data-id="${adventure.adventure_id}">Посмотреть Группу</button>
-            `;
-            adventuresList.appendChild(adventureDiv);
-
-            // Add event listener
-            adventureDiv.querySelector('.view-party-button').addEventListener('click', () => {
-                fetchParty(adventure.adventure_id);
-            });
-        });
+    function showMainButtons() {
+        mainButtonsSection.style.display = 'block';
+        partySection.style.display = 'none';
+        characterModal.style.display = 'none';
+        stopAutoRefresh(); // Stop auto-refresh on main screen
+        updateConnectionStatus(true);
     }
 
     function fetchParty(adventureId) {
@@ -100,16 +122,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showPartySection(party) {
+        mainButtonsSection.style.display = 'none';
         partySection.style.display = 'block';
-        adventuresList.style.display = 'none';
         partyList.innerHTML = '';
+        startAutoRefresh(); // Start auto-refresh on party screen
 
         party.forEach(member => {
+            const playerName = member.username || member.first_name || `User ${member.user_id}`;
             const partyMemberDiv = document.createElement('div');
             partyMemberDiv.className = 'party-member';
             partyMemberDiv.innerHTML = `
-                <p>👤 <b>${member.name}</b> (Lv. ${member.level})</p>
-                <p>⚔️ ${member.class_name}</p>
+                <div class="member-info">
+                    <p>👤 <b>${member.name}</b> (Lv. ${member.level})</p>
+                    <p>⚔️ ${member.class_name}</p>
+                    <p class="player-name">🎮 ${playerName}</p>
+                </div>
                 <button class="view-character-button" data-id="${member.character_id}">Детали</button>
             `;
             partyList.appendChild(partyMemberDiv);
@@ -240,12 +267,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Auto-refresh every 3 seconds
-    let refreshInterval;
-    
     function startAutoRefresh() {
         refreshInterval = setInterval(() => {
-            if (document.getElementById('adventuresSection').style.display !== 'none') {
-                fetchAdventures();
+            // Only refresh when on character or party screens
+            if (partySection.style.display === 'block') {
+                // Re-fetch the current party data
+                const userId = getUserId();
+                fetchActiveParty();
+            } else if (characterModal.style.display === 'block') {
+                // Re-fetch character data if it's the user's own character
+                const userId = getUserId();
+                fetchMyCharacter();
             }
         }, 3000);
     }
@@ -254,17 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (refreshInterval) {
             clearInterval(refreshInterval);
         }
-    }
-    
-    // Update last update time
-    function updateLastUpdateTime() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('ru-RU', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        });
-        document.getElementById('lastUpdate').textContent = timeString;
     }
     
     // Connection status indicator
@@ -281,24 +302,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Override fetch functions to update connection status and time
-    const originalFetchAdventures = fetchAdventures;
-    fetchAdventures = function() {
-        originalFetchAdventures();
-        updateLastUpdateTime();
-        updateConnectionStatus(true);
-    };
-    
-    // Initial fetch and start auto-refresh
-    fetchAdventures();
-    startAutoRefresh();
+    // Initialize the app
+    setLoadingScreen(false);
+    showMainButtons();
     
     // Stop auto-refresh when page is hidden
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
             stopAutoRefresh();
         } else {
-            startAutoRefresh();
+            if (partySection.style.display === 'block' || characterModal.style.display === 'block') {
+                startAutoRefresh();
+            }
         }
     });
 });
