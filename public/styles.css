@@ -226,12 +226,13 @@ section {
     border-radius: 4px;
     width: 100%;
     max-width: 600px; /* Increase max width */
-    height: 90vh; /* Set specific height */
-    max-height: 90vh; /* Limit height */
+    height: 98vh; /* Use almost full viewport height */
+    max-height: 98vh; /* Limit height */
     overflow-y: auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    margin: 1vh 0; /* Small vertical margin */
 }
 
 /* Modal header styles */
@@ -417,7 +418,8 @@ p.version {
     .modal-content {
         width: 95%;
         max-width: 500px;
-        margin: 10px;
+        height: 96vh;
+        margin: 2vh 10px;
         padding: 15px;
     }
     
@@ -452,8 +454,9 @@ p.version {
     .modal-content {
         width: 95%;
         max-width: 450px;
+        height: 96vh;
         padding: 12px;
-        margin: 5px;
+        margin: 2vh 5px;
     }
     
     .character-details {
