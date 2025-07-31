@@ -1,0 +1,421 @@
+/* Styles for HTML elements */
+html, body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    line-height: 1.5;
+    background-color: #f0f0f0;
+}
+
+/* Flex container styles */
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header styles */
+.app-header {
+    position: relative;
+    background-color: #444;
+    color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Header content styles */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/* Connection status styles */
+.connection-status {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+/* Status indicator styles */
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: red; /* assume disconnected by default */
+    transition: background-color 0.3s ease;
+}
+
+/* Loading screen styles */
+.loading-screen {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+}
+
+/* Loading spinner styles */
+.loading-spinner {
+    width: 80px;
+    height: 80px;
+    border: 8px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top-color: #007BFF;
+    animation: spin 1s linear infinite;
+}
+
+/* @keyframes rule for spin animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading text styles */
+.loading-screen p {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+/* Error screen styles */
+.error-screen {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Error content styles */
+.error-content {
+    margin: 10px auto;
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+/* Title styles for h2 element */
+h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+/* Retry button styles */
+.retry-button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 16px;
+}
+
+/* Default styles for section element */
+section {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    flex: 1;
+}
+
+/* Section header styles */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+/* Refresh button styles */
+.refresh-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    font-size: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* Adventure list styles */
+.adventures-list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Adventure styles */
+.adventure {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Adventure hover effect */
+.adventure:hover {
+    background-color: #f9f9f9;
+}
+
+/* Adventure header styles */
+.adventure-header {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Party list styles */
+.party-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Modal content styles */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 500px;
+}
+
+/* Modal header styles */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Close button styles */
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+/* Character details styles */
+.character-details {
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.character-basic-info,
+.character-skills,
+.character-stats,
+.character-equipment,
+.character-spells {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007BFF;
+}
+
+.character-details h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Footer styles */
+.app-footer {
+    background-color: #444;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+p.version {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #ccc;
+}
+
+/* Button styles */
+.view-party-button, .view-character-button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+}
+
+.view-party-button:hover, .view-character-button:hover {
+    background-color: #0056b3;
+}
+
+.retry-button:hover {
+    background-color: #0056b3;
+}
+
+.refresh-button:hover {
+    background-color: #218838;
+}
+
+.close-button:hover {
+    color: #dc3545;
+}
+
+/* Back button styles */
+.back-button {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}
+
+/* Party member styles */
+.party-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    transition: box-shadow 0.2s ease;
+}
+
+.party-member:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.party-member p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Character details enhanced styling */
+.character-details p {
+    margin: 8px 0;
+    padding: 4px 0;
+    font-size: 16px;
+}
+
+.character-details b {
+    color: #333;
+}
+
+/* Adventure enhanced styling */
+.adventure {
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #007BFF;
+    transition: all 0.2s ease;
+}
+
+.adventure:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+/* Loading screen enhanced */
+.loading-screen p {
+    color: #666;
+    font-weight: 500;
+}
+
+/* Modal backdrop blur effect */
+.modal {
+    backdrop-filter: blur(3px);
+}
+
+/* Status connected/disconnected colors */
+.status-indicator.connected {
+    background-color: #28a745;
+}
+
+.status-indicator.disconnected {
+    background-color: #dc3545;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .connection-status {
+        margin-top: 10px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .refresh-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+    
+    .party-member {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .view-character-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+}
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Bot - Party Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Telegram Mini App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>🎲 D&D Party Manager</h1>
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Загрузка приключений...</p>
+        </div>
+
+        <!-- Error Screen -->
+        <div id="errorScreen" class="error-screen" style="display: none;">
+            <div class="error-content">
+                <h2>❌ Ошибка</h2>
+                <p id="errorMessage">Не удалось загрузить данные</p>
+                <button id="retryButton" class="retry-button">Повторить</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="mainContent" style="display: none;">
+            <!-- Adventures List -->
+            <section id="adventuresSection" class="section">
+                <div class="section-header">
+                    <h2>🗡️ Активные Приключения</h2>
+                    <button id="refreshButton" class="refresh-button">🔄</button>
+                </div>
+                <div id="adventuresList" class="adventures-list">
+                    <!-- Adventures will be populated here -->
+                </div>
+            </section>
+
+            <!-- Party Section -->
+            <section id="partySection" class="section" style="display: none;">
+                <div class="section-header">
+                    <button id="backToAdventures" class="back-button">← Назад</button>
+                    <h2 id="partyTitle">👥 Состав Группы</h2>
+                </div>
+                <div id="partyList" class="party-list">
+                    <!-- Party members will be populated here -->
+                </div>
+            </section>
+
+            <!-- Character Detail Modal -->
+            <div id="characterModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="characterName">Детали Персонажа</h2>
+                        <button id="closeModal" class="close-button">×</button>
+                    </div>
+                    <div id="characterDetails" class="character-details">
+                        <!-- Character details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Обновлено: <span id="lastUpdate">--:--</span></p>
+            <p class="version">v1.0.0</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
