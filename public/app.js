@@ -82,15 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`${apiBaseUrl}/adventures`)
             .then(response => response.json())
             .then(data => {
+                console.log('Adventures response:', data);
                 if (data.success && data.adventures.length > 0) {
                     const activeAdventure = data.adventures[0]; // Get first active adventure
+                    console.log('Using adventure:', activeAdventure);
                     fetchParty(activeAdventure.adventure_id);
                 } else {
+                    console.log('No adventures found or failed');
+                    setLoadingScreen(false);
                     setErrorScreen(true, 'No active adventures found');
                 }
             })
             .catch(error => {
                 console.error('Error fetching adventures:', error);
+                setLoadingScreen(false);
                 setErrorScreen(true, 'Failed to load adventures');
             });
     }
@@ -105,19 +110,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function fetchParty(adventureId) {
         setLoadingScreen(true);
+        console.log('Fetching party for adventure:', adventureId);
         fetch(`${apiBaseUrl}/adventures/${adventureId}/party`)
-            .then(response => response.json())
+            .then(response => {
+                console.log('Party response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Party response data:', data);
                 if (data.success) {
                     showPartySection(data.party);
                     setLoadingScreen(false);
                 } else {
-                    setErrorScreen(true, 'Failed to load party members');
+                    console.error('Party fetch failed:', data.error);
+                    setLoadingScreen(false);
+                    setErrorScreen(true, `Failed to load party members: ${data.error || 'Unknown error'}`);
                 }
             })
             .catch(error => {
                 console.error('Error fetching party members:', error);
-                setErrorScreen(true, 'Failed to load party members');
+                setLoadingScreen(false);
+                setErrorScreen(true, `Failed to load party members: ${error.message}`);
             });
     }
 
