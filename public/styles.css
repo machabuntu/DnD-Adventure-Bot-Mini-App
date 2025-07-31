@@ -222,11 +222,11 @@ section {
 /* Modal content styles */
 .modal-content {
     background-color: #fff;
-    padding: 15px;
+    padding: 20px;
     border-radius: 4px;
-    width: 95%;
-    max-width: 400px; /* Reduce max width for Telegram window */
-    max-height: 85vh; /* Limit height */
+    width: 100%;
+    max-width: 600px; /* Increase max width */
+    max-height: 95vh; /* Increase height limit */
     overflow-y: auto;
     box-sizing: border-box;
 }
@@ -411,10 +411,10 @@ p.version {
     }
     
     .modal-content {
-        width: 98%;
-        max-width: 350px;
-        margin: 5px;
-        padding: 10px;
+        width: 95%;
+        max-width: 500px;
+        margin: 10px;
+        padding: 15px;
     }
     
     .main-button {
@@ -446,10 +446,10 @@ p.version {
     }
     
     .modal-content {
-        width: 98%;
-        max-width: 320px;
-        padding: 8px;
-        margin: 2px;
+        width: 95%;
+        max-width: 450px;
+        padding: 12px;
+        margin: 5px;
     }
     
     .character-details {
