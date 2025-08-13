@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>⚔️ <b>Класс:</b> ${character.class_name}</p>
                 <p>📊 <b>Уровень:</b> ${character.level}</p>
                 <p>⭐ <b>Опыт:</b> ${character.experience}</p>
-                <p>❤️ <b>Очки здоровья:</b> ${character.hit_points}/${character.max_hit_points}</p>
+                <p>❤️ <b>Очки здоровья:</b> ${character.current_hp}/${character.max_hp}</p>
                 <p>💰 <b>Деньги:</b> ${character.money} монет</p>
                 <p>🎯 <b>Бонус мастерства:</b> +${character.proficiency_bonus}</p>
             </div>
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>⚔️ <b>Класс:</b> ${character.class_name}</p>
                 <p>📊 <b>Уровень:</b> ${character.level}</p>
                 <p>⭐ <b>Опыт:</b> ${character.experience}</p>
-                <p>❤️ <b>Очки здоровья:</b> ${character.hit_points}/${character.max_hit_points}</p>
+                <p>❤️ <b>Очки здоровья:</b> ${character.current_hp}/${character.max_hp}</p>
                 <p>💰 <b>Деньги:</b> ${character.money} монет</p>
                 <p>🎯 <b>Бонус мастерства:</b> +${character.proficiency_bonus}</p>
             </div>
